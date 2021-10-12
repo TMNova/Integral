@@ -9,12 +9,12 @@ public class CalculationThread extends Thread {
 		this.a = a;
 		this.b = b;
 		this.n = n;
-		run();
+		start();
 	}
 
 	@Override
 	public void run() {
-		CalculationList.add(CalculationIntegral.calcSquareIntegral(a, b));
+		CalculationIntegral.calcSquareIntegral(a, b);
 	}
 
 }

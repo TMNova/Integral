@@ -1,10 +1,12 @@
 package ru.lanit;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 class CalculationIntegral {
     private static List<CalculationThread> threads = new ArrayList<CalculationThread>();
+    private static List listCalc = Collections.synchronizedList(new ArrayList<>());
 
 
     private static double f(double x) {
@@ -17,10 +19,11 @@ class CalculationIntegral {
         for (int i = 0; i < (b - a) / step; i++) {
             area += step * f(a + i * step);
         }
+        listCalc.add(area);
         return area;
     }
 
-    public static double calcWithThreads(double startPoint, double endPoint, int n) throws InterruptedException {
+    public synchronized static double calcWithThreads(double startPoint, double endPoint, int n) {
         double interval = (endPoint - startPoint) / n;
         double a = endPoint - interval;
         double b = endPoint;
@@ -35,14 +38,18 @@ class CalculationIntegral {
         }
 
         for (CalculationThread thread : threads) {
-            thread.join();
+            while (thread.isAlive()) {
+                continue;
+            }
         }
 
-        for (int i = 0; i < CalculationList.listSize(); i++) {
-            double value = (double) CalculationList.getValueByIndex(i);
+        for (int i = 0; i < listCalc.size(); i++) {
+            double value = (double) listCalc.get(i);
             sum += value;
         }
 
         return sum;
     }
+
+
 }
