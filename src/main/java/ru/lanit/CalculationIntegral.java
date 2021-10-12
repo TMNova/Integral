@@ -3,10 +3,14 @@ package ru.lanit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 class CalculationIntegral {
     private static List<CalculationThread> threads = new ArrayList<CalculationThread>();
     private static List listCalc = Collections.synchronizedList(new ArrayList<>());
+    private static double sum = 0;
+    private static Lock lock = new ReentrantLock();
 
 
     private static double f(double x) {
@@ -23,7 +27,7 @@ class CalculationIntegral {
         return area;
     }
 
-    public synchronized static double calcWithThreads(double startPoint, double endPoint, int n) {
+    public static void calcWithThreads(double startPoint, double endPoint, int n) throws InterruptedException {
         double interval = (endPoint - startPoint) / n;
         double a = endPoint - interval;
         double b = endPoint;
@@ -32,24 +36,36 @@ class CalculationIntegral {
         for (int i = 0; i < n; i++) {
             if (a >= startPoint) {
                 threads.add(new CalculationThread(a, b));
+                synchronized (threads.get(i)) {
+                    threads.get(i).wait();
+                }
                 a -= interval;
                 b -= interval;
             }
         }
+        Thread.sleep(100);
 
         for (CalculationThread thread : threads) {
-            while (thread.isAlive()) {
-                continue;
-            }
+            if(thread.isAlive()) continue;
         }
 
-        for (int i = 0; i < listCalc.size(); i++) {
-            double value = (double) listCalc.get(i);
-            sum += value;
-        }
-
-        return sum;
     }
 
+    public synchronized static void synchronizedIncrementSum(double value) {
+        sum += value;
+    }
+
+    public static void lockThreadIncrementSum(double value) {
+        lock.lock();
+        try {
+            sum += value;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public static double getSum() {
+        return sum;
+    }
 
 }

@@ -5,6 +5,7 @@ public class CalculationThread extends Thread {
 	private double b;
 	private int n;
 
+
 	public CalculationThread(double a, double b) {
 		this.a = a;
 		this.b = b;
@@ -14,7 +15,12 @@ public class CalculationThread extends Thread {
 
 	@Override
 	public void run() {
-		CalculationIntegral.calcSquareIntegral(a, b);
+		synchronized (this) {
+			CalculationIntegral.synchronizedIncrementSum(CalculationIntegral.calcSquareIntegral(a, b));
+			CalculationThread.currentThread().notify();
+		}
+//		Здесь проводится инкеремнтирование через Lock Concurrency
+//		CalculationIntegral.lockThreadIncrementSum(CalculationIntegral.calcSquareIntegral(a, b));
 	}
 
 }
