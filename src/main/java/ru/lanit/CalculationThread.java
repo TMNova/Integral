@@ -1,10 +1,12 @@
 package ru.lanit;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class CalculationThread extends Thread {
 	private double a;
 	private double b;
 	private int n;
-
 
 	public CalculationThread(double a, double b) {
 		this.a = a;
@@ -14,10 +16,7 @@ public class CalculationThread extends Thread {
 
 	@Override
 	public void run() {
-		synchronized (this) {
-			CalculationIntegral.incrementSum(CalculationIntegral.calcSquareIntegral(a, b));
-			notify();
-		}
+		CalculationIntegral.incrementSum(CalculationIntegral.calcSquareIntegral(a, b));
 	}
 
 }

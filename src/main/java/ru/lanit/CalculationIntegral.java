@@ -3,12 +3,14 @@ package ru.lanit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 class CalculationIntegral {
     private static List<CalculationThread> threads = new ArrayList<CalculationThread>();
     private static List listCalc = Collections.synchronizedList(new ArrayList<>());
     private static double sum = 0;
-
+    private static Lock lock = new ReentrantLock();
     private static double f(double x) {
         return Math.sin(x);
     }
@@ -23,7 +25,7 @@ class CalculationIntegral {
         return area;
     }
 
-    public static void calcWithThreads(double startPoint, double endPoint, int n) throws InterruptedException {
+    public static double calcWithThreads(double startPoint, double endPoint, int n) throws InterruptedException {
         double interval = (endPoint - startPoint) / n;
         double a = endPoint - interval;
         double b = endPoint;
@@ -33,23 +35,26 @@ class CalculationIntegral {
             if (a >= startPoint) {
                 threads.add(new CalculationThread(a, b));
                 threads.get(i).start();
-                synchronized (threads.get(i)) {
-                    threads.get(i).wait();
-                }
+                threads.get(i).join();
                 a -= interval;
                 b -= interval;
             }
         }
-//        Thread.sleep(100);
-
         for (CalculationThread thread : threads) {
             if(thread.isAlive()) continue;
         }
 
+        return getSum();
+
     }
 
     public static void incrementSum(double value) {
-        sum += value;
+        lock.lock();
+        try{
+            sum += value;
+        } finally {
+            lock.unlock();
+        }
     }
 
     public static double getSum() {

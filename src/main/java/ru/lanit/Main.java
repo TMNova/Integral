@@ -7,7 +7,6 @@ public class Main {
     private static List<CalculationThread> threads = new ArrayList<CalculationThread>();
 
     public static void main(String[] args) throws InterruptedException {
-        CalculationIntegral.calcWithThreads(0, 4, 30);
-        System.out.println(CalculationIntegral.getSum());
+        System.out.println(CalculationIntegral.calcWithThreads(0, 4, 4));
     }
 }
