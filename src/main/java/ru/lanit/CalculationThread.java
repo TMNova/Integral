@@ -3,20 +3,24 @@ package ru.lanit;
 public class CalculationThread extends Thread {
 	private double a;
 	private double b;
-	private int n;
+	private int threadNumber;
 
 
-	public CalculationThread(double a, double b) {
+	public CalculationThread(double a, double b, int threadNumber) {
 		this.a = a;
 		this.b = b;
-		this.n = n;
+		this.threadNumber = threadNumber;
 	}
 
 	@Override
 	public void run() {
+		double value = CalculationIntegral.calcSquareIntegral(a, b);
 		synchronized (this) {
-			CalculationIntegral.incrementSum(CalculationIntegral.calcSquareIntegral(a, b));
-			notify();
+			try {
+				CalculationIntegral.incrementSum(value, threadNumber);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
