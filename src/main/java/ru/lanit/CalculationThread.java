@@ -15,12 +15,7 @@ public class CalculationThread extends Thread {
 
 	@Override
 	public void run() {
-		synchronized (this) {
-			CalculationIntegral.synchronizedIncrementSum(CalculationIntegral.calcSquareIntegral(a, b));
-			CalculationThread.currentThread().notify();
-		}
-//		Здесь проводится инкеремнтирование через Lock Concurrency
-//		CalculationIntegral.lockThreadIncrementSum(CalculationIntegral.calcSquareIntegral(a, b));
+		CalculationIntegral.incrementSum(CalculationIntegral.calcSquareIntegral(a, b));
 	}
 
 }
