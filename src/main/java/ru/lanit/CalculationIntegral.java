@@ -10,6 +10,7 @@ class CalculationIntegral {
     private static List<CalculationThread> threads = new ArrayList<CalculationThread>();
     private static List listCalc = Collections.synchronizedList(new ArrayList<>());
     private static double sum = 0;
+    private static Lock lock = new ReentrantLock();
 
     private static double f(double x) {
         return Math.sin(x);
@@ -49,8 +50,13 @@ class CalculationIntegral {
 
     }
 
-    public synchronized static void incrementSum(double value) {
-        sum += value;
+    public static void incrementSum(double value) {
+        try {
+            lock.lock();
+            sum += value;
+        } finally {
+            lock.unlock();
+        }
     }
 
     public static double getSum() {
