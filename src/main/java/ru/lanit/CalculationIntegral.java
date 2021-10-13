@@ -32,8 +32,9 @@ class CalculationIntegral {
         for (int i = 0; i < n; i++) {
             if (a >= startPoint) {
                 threads.add(new CalculationThread(a, b));
-                threads.get(i).start();
+                System.out.println(threads.get(i).isAlive());
                 synchronized (threads.get(i)) {
+                    threads.get(i).start();
                     threads.get(i).wait();
                 }
                 a -= interval;
