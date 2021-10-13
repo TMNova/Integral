@@ -3,14 +3,11 @@ package ru.lanit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 class CalculationIntegral {
     private static List<CalculationThread> threads = new ArrayList<CalculationThread>();
     private static List listCalc = Collections.synchronizedList(new ArrayList<>());
     private static double sum = 0;
-    private static Lock lock = new ReentrantLock();
 
     private static double f(double x) {
         return Math.sin(x);
@@ -35,6 +32,7 @@ class CalculationIntegral {
         for (int i = 0; i < n; i++) {
             if (a >= startPoint) {
                 threads.add(new CalculationThread(a, b));
+                threads.get(i).start();
                 synchronized (threads.get(i)) {
                     threads.get(i).wait();
                 }
@@ -42,7 +40,7 @@ class CalculationIntegral {
                 b -= interval;
             }
         }
-        Thread.sleep(100);
+//        Thread.sleep(100);
 
         for (CalculationThread thread : threads) {
             if(thread.isAlive()) continue;
@@ -51,12 +49,7 @@ class CalculationIntegral {
     }
 
     public static void incrementSum(double value) {
-        try {
-            lock.lock();
-            sum += value;
-        } finally {
-            lock.unlock();
-        }
+        sum += value;
     }
 
     public static double getSum() {

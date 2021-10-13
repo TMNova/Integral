@@ -10,12 +10,14 @@ public class CalculationThread extends Thread {
 		this.a = a;
 		this.b = b;
 		this.n = n;
-		start();
 	}
 
 	@Override
 	public void run() {
-		CalculationIntegral.incrementSum(CalculationIntegral.calcSquareIntegral(a, b));
+		synchronized (this) {
+			CalculationIntegral.incrementSum(CalculationIntegral.calcSquareIntegral(a, b));
+			notify();
+		}
 	}
 
 }
