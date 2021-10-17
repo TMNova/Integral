@@ -3,13 +3,12 @@ package ru.lanit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 class CalculationIntegral {
     private static List<CalculationThread> threads = new ArrayList<CalculationThread>();
     private static List listCalc = Collections.synchronizedList(new ArrayList<>());
-    private static volatile double sum = 0;
-    private static double oldValue = 0;
-    private static boolean firstIteration = true;
+    private static AtomicLong SUM = new AtomicLong();
 
     private static double f(double x) {
         return Math.sin(x);
@@ -49,12 +48,12 @@ class CalculationIntegral {
 
     }
 
-    public static void incrementSum(double value, int threadNumber) {
-            sum += value;
+    public static void incrementSum(double value) {
+        SUM.getAndAdd(Double.doubleToLongBits(value));
     }
 
     public static double getSum() {
-        return sum;
+        return Double.longBitsToDouble(SUM.longValue());
     }
 
 }
