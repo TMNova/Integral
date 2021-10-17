@@ -1,15 +1,13 @@
 package ru.lanit;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 class CalculationIntegral {
     private static List<CalculationThread> threads = new ArrayList<CalculationThread>();
     private static List listCalc = Collections.synchronizedList(new ArrayList<>());
-    private static double sum = 0;
+    private static volatile double sum = 0;
     private static double oldValue = 0;
     private static boolean firstIteration = true;
 
@@ -44,36 +42,19 @@ class CalculationIntegral {
 
         for (CalculationThread thread : threads) {
             while (thread.isAlive()) {
-                synchronized (thread) {
-                    thread.notify();
-                }
+                Thread.sleep(100);
                 continue;
             }
         }
 
     }
 
-    public static void incrementSum(double value, int threadNumber) throws InterruptedException {
-        synchronized (threads.get(threadNumber)) {
-            threads.get(threadNumber).wait();
+    public static void incrementSum(double value, int threadNumber) {
             sum += value;
-        }
     }
 
     public static double getSum() {
         return sum;
-    }
-
-    public static double getOldValue() {
-        return oldValue;
-    }
-
-    public static boolean isFirstIteration() {
-        return firstIteration;
-    }
-
-    public static void setFalseFirstIteration() {
-        firstIteration = false;
     }
 
 }

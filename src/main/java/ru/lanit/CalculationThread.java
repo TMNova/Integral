@@ -15,13 +15,7 @@ public class CalculationThread extends Thread {
 	@Override
 	public void run() {
 		double value = CalculationIntegral.calcSquareIntegral(a, b);
-		synchronized (this) {
-			try {
-				CalculationIntegral.incrementSum(value, threadNumber);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+		CalculationIntegral.incrementSum(value, threadNumber);
 	}
 
 }
