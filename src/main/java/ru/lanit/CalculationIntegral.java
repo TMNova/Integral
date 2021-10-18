@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 class CalculationIntegral {
     private static List<CalculationThread> threads = new ArrayList<CalculationThread>();
     private static List listCalc = Collections.synchronizedList(new ArrayList<>());
-    private static AtomicLong SUM = new AtomicLong();
+    private static AtomicReference<Double> SUM = new AtomicReference<>();
 
     private static double f(double x) {
         return Math.sin(x);
@@ -49,11 +50,15 @@ class CalculationIntegral {
     }
 
     public static void incrementSum(double value) {
-        SUM.getAndAdd(Double.doubleToLongBits(value));
+        if (SUM.get() != null) {
+            SUM.set(SUM.get() + value);
+        } else {
+            SUM.set(value);
+        }
     }
 
     public static double getSum() {
-        return Double.longBitsToDouble(SUM.longValue());
+        return SUM.get();
     }
 
 }
