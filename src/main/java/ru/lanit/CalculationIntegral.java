@@ -50,7 +50,9 @@ class CalculationIntegral {
     }
 
     public static void incrementSum(double value, int threadNumber) {
+        synchronized (threads.get(threadNumber)) {
             sum += value;
+        }
     }
 
     public static double getSum() {
